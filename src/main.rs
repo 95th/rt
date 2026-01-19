@@ -1,4 +1,12 @@
-use crate::{color::Color, hit::HitTarget, ray::Ray, sphere::Sphere, vec3::Vec3};
+use std::f64;
+
+use crate::{
+    color::Color,
+    hit::{HitTarget, HitWorld},
+    ray::Ray,
+    sphere::Sphere,
+    vec3::Vec3,
+};
 
 mod color;
 mod hit;
@@ -6,9 +14,8 @@ mod ray;
 mod sphere;
 mod vec3;
 
-fn ray_color(ray: &Ray) -> Color {
-    let sphere = Sphere::new(Vec3::new(0.0, 0.0, -1.0), 0.5);
-    if let Some(hit) = sphere.hit(ray, 0.0, 18.0) {
+fn ray_color(ray: &Ray, target: &dyn HitTarget) -> Color {
+    if let Some(hit) = target.hit(ray, 0.0, f64::INFINITY) {
         let c = 0.5 * (hit.normal + 1.0);
         return Color::from(c);
     }
@@ -28,6 +35,10 @@ fn main() {
     } else {
         1
     };
+
+    let mut world = HitWorld::new();
+    world.push(Sphere::new(Vec3::new(0.0, 0.0, -1.0), 0.5));
+    world.push(Sphere::new(Vec3::new(0.0, -100.5, -1.0), 100.0));
 
     let focal_length = 1.0;
     let viewport_height = 2.0;
@@ -54,7 +65,7 @@ fn main() {
             let ray_direction = pixel_center - camera_center;
             let ray = Ray::new(camera_center, ray_direction);
 
-            let color = ray_color(&ray);
+            let color = ray_color(&ray, &world);
             println!("{}", color.to_int());
         }
     }
