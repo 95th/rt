@@ -3,7 +3,7 @@ use std::rc::Rc;
 use crate::{
     camera::Camera,
     hit::HitWorld,
-    material::{LambertianMaterial, MetalMaterial},
+    material::{DielectricMaterial, LambertianMaterial, MetalMaterial},
     sphere::Sphere,
     vec3::Vec3,
 };
@@ -25,7 +25,7 @@ fn main() {
 
     let mat_ground = Rc::new(LambertianMaterial::new(Vec3::new(0.8, 0.8, 0.0)));
     let mat_center = Rc::new(LambertianMaterial::new(Vec3::new(0.1, 0.2, 0.5)));
-    let mat_left = Rc::new(MetalMaterial::new(Vec3::new(0.8, 0.8, 0.8), 0.3));
+    let mat_left = Rc::new(DielectricMaterial::new(1.0 / 1.33));
     let mat_right = Rc::new(MetalMaterial::new(Vec3::new(0.8, 0.6, 0.2), 1.0));
 
     let mut world = HitWorld::new();
