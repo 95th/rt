@@ -2,9 +2,9 @@ use std::fmt;
 
 #[derive(Debug, Clone, Copy)]
 pub struct Color<T = f64> {
-    r: T,
-    g: T,
-    b: T,
+    pub r: T,
+    pub g: T,
+    pub b: T,
 }
 
 impl<T> Color<T> {
