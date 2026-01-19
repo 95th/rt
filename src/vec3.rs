@@ -15,6 +15,10 @@ impl Vec3 {
         Self { x, y, z }
     }
 
+    pub fn dot(self, rhs: Self) -> f64 {
+        self.x * rhs.x + self.y * rhs.y + self.z * rhs.z
+    }
+
     pub fn unit(self) -> Self {
         self / self.len()
     }
