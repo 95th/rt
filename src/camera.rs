@@ -7,6 +7,7 @@ pub struct Camera {
     image_height: u32,
     pixel_samples_scale: f64,
     samples_per_pixel: u8,
+    max_depth: u32,
     center: Vec3,
     pixel00_loc: Vec3,
     pixel_delta_u: Vec3,
@@ -14,7 +15,7 @@ pub struct Camera {
 }
 
 impl Camera {
-    pub fn new(image_width: u32, aspect_ratio: f64, samples_per_pixel: u8) -> Self {
+    pub fn new(image_width: u32, aspect_ratio: f64, samples_per_pixel: u8, max_depth: u32) -> Self {
         let image_height = image_width as f64 / aspect_ratio;
         let image_height = if image_height >= 1.0 {
             image_height as u32
@@ -41,6 +42,7 @@ impl Camera {
             image_height,
             pixel_samples_scale,
             samples_per_pixel,
+            max_depth,
             center,
             pixel00_loc,
             pixel_delta_u,
@@ -59,7 +61,7 @@ impl Camera {
                 let mut pixel_color = Vec3::splat(0.0);
                 for _ in 0..self.samples_per_pixel {
                     let ray = self.get_ray(i, j);
-                    pixel_color = pixel_color + self.ray_color(&ray, target);
+                    pixel_color = pixel_color + self.ray_color(&ray, self.max_depth, target);
                 }
                 let color = Color::from(pixel_color * self.pixel_samples_scale);
                 println!("{}", color.to_int());
@@ -68,10 +70,14 @@ impl Camera {
         eprintln!("Done");
     }
 
-    fn ray_color(&self, ray: &Ray, target: &dyn HitTarget) -> Vec3 {
-        if let Some(hit) = target.hit(ray, Interval::new(0.0, f64::INFINITY)) {
+    fn ray_color(&self, ray: &Ray, depth: u32, target: &dyn HitTarget) -> Vec3 {
+        if depth == 0 {
+            return Vec3::splat(0.0);
+        }
+
+        if let Some(hit) = target.hit(ray, Interval::new(0.001, f64::INFINITY)) {
             let direction = Vec3::random_unit_on_hemisphere(hit.normal);
-            let color = self.ray_color(&Ray::new(hit.point, direction), target);
+            let color = self.ray_color(&Ray::new(hit.point, direction), depth - 1, target);
             return 0.5 * color;
         }
 
