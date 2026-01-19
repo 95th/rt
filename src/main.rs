@@ -11,11 +11,12 @@ mod vec3;
 fn main() {
     let aspect_ratio = 16.0 / 9.0;
     let image_width = 400;
+    let samples_per_pixel = 100;
 
     let mut world = HitWorld::new();
     world.push(Sphere::new(Vec3::new(0.0, 0.0, -1.0), 0.5));
     world.push(Sphere::new(Vec3::new(0.0, -100.5, -1.0), 100.0));
 
-    let camera = Camera::new(image_width, aspect_ratio);
+    let camera = Camera::new(image_width, aspect_ratio, samples_per_pixel);
     camera.render(&world);
 }

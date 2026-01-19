@@ -1,6 +1,6 @@
 use std::fmt;
 
-use crate::vec3::Vec3;
+use crate::{interval::Interval, vec3::Vec3};
 
 #[derive(Debug, Default, Clone, Copy)]
 pub struct Color<T = f64> {
@@ -17,11 +17,12 @@ impl<T> Color<T> {
 
 impl Color<f64> {
     pub fn to_int(self) -> Color<u8> {
+        const INTENSITY: Interval = Interval::new(0.0, 0.999);
         let Color { r, g, b } = self;
         Color::new(
-            (255.999 * r) as u8,
-            (255.999 * g) as u8,
-            (255.999 * b) as u8,
+            (256.0 * INTENSITY.clamp(r)) as u8,
+            (256.0 * INTENSITY.clamp(g)) as u8,
+            (256.0 * INTENSITY.clamp(b)) as u8,
         )
     }
 }
