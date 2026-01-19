@@ -68,6 +68,15 @@ impl Vec3 {
         let Self { x, y, z } = *self;
         x * x + y * y + z * z
     }
+
+    pub fn is_near_zero(&self) -> bool {
+        let epsilon = 1e-8;
+        self.x.abs() < epsilon && self.y.abs() < epsilon && self.z.abs() < epsilon
+    }
+
+    pub fn reflect(self, normal: Self) -> Self {
+        self - 2.0 * self.dot(normal) * normal
+    }
 }
 
 impl Add for Vec3 {
@@ -123,6 +132,18 @@ impl Mul<Vec3> for f64 {
 
     fn mul(self, rhs: Vec3) -> Self::Output {
         rhs * self
+    }
+}
+
+impl Mul for Vec3 {
+    type Output = Vec3;
+
+    fn mul(self, rhs: Vec3) -> Self::Output {
+        Self {
+            x: self.x * rhs.x,
+            y: self.y * rhs.y,
+            z: self.z * rhs.z,
+        }
     }
 }
 

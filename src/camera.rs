@@ -76,9 +76,14 @@ impl Camera {
         }
 
         if let Some(hit) = target.hit(ray, Interval::new(0.001, f64::INFINITY)) {
-            let direction = hit.normal + Vec3::random_unit();
-            let color = self.ray_color(&Ray::new(hit.point, direction), depth - 1, target);
-            return 0.5 * color;
+            // let direction = hit.normal + Vec3::random_unit();
+            // let color = self.ray_color(&Ray::new(hit.point, direction), depth - 1, target);
+            // return 0.5 * color;
+            return if let Some(scatter) = hit.material.scatter(ray, &hit) {
+                scatter.attenuation * self.ray_color(&scatter.scattered, depth - 1, target)
+            } else {
+                Vec3::splat(0.0)
+            };
         }
 
         let unit_direction = ray.direction.unit();

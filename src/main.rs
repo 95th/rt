@@ -1,9 +1,18 @@
-use crate::{camera::Camera, hit::HitWorld, sphere::Sphere, vec3::Vec3};
+use std::rc::Rc;
+
+use crate::{
+    camera::Camera,
+    hit::HitWorld,
+    material::{LambertianMaterial, MetalMaterial},
+    sphere::Sphere,
+    vec3::Vec3,
+};
 
 mod camera;
 mod color;
 mod hit;
 mod interval;
+mod material;
 mod ray;
 mod sphere;
 mod vec3;
@@ -14,9 +23,16 @@ fn main() {
     let samples_per_pixel = 100;
     let max_depth = 50;
 
+    let mat_ground = Rc::new(LambertianMaterial::new(Vec3::new(0.8, 0.8, 0.0)));
+    let mat_center = Rc::new(LambertianMaterial::new(Vec3::new(0.1, 0.2, 0.5)));
+    let mat_left = Rc::new(MetalMaterial::new(Vec3::new(0.8, 0.8, 0.8), 0.3));
+    let mat_right = Rc::new(MetalMaterial::new(Vec3::new(0.8, 0.6, 0.2), 1.0));
+
     let mut world = HitWorld::new();
-    world.push(Sphere::new(Vec3::new(0.0, 0.0, -1.0), 0.5));
-    world.push(Sphere::new(Vec3::new(0.0, -100.5, -1.0), 100.0));
+    world.push(Sphere::new(Vec3::new(0.0, -100.5, -1.0), 100.0, mat_ground));
+    world.push(Sphere::new(Vec3::new(0.0, 0.0, -1.2), 0.5, mat_center));
+    world.push(Sphere::new(Vec3::new(-1.0, 0.0, -1.0), 0.5, mat_left));
+    world.push(Sphere::new(Vec3::new(1.0, 0.0, -1.0), 0.5, mat_right));
 
     let camera = Camera::new(image_width, aspect_ratio, samples_per_pixel, max_depth);
     camera.render(&world);
