@@ -76,7 +76,7 @@ impl Camera {
         }
 
         if let Some(hit) = target.hit(ray, Interval::new(0.001, f64::INFINITY)) {
-            let direction = Vec3::random_unit_on_hemisphere(hit.normal);
+            let direction = hit.normal + Vec3::random_unit();
             let color = self.ray_color(&Ray::new(hit.point, direction), depth - 1, target);
             return 0.5 * color;
         }
