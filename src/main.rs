@@ -22,6 +22,7 @@ fn main() {
     let image_width = 400;
     let samples_per_pixel = 100;
     let max_depth = 50;
+    let fov = 90.0;
 
     let mat_ground = Rc::new(LambertianMaterial::new(Vec3::new(0.8, 0.8, 0.0)));
     let mat_center = Rc::new(LambertianMaterial::new(Vec3::new(0.1, 0.2, 0.5)));
@@ -36,6 +37,6 @@ fn main() {
     world.push(Sphere::new(Vec3::new(-1.0, 0.0, -1.0), 0.4, mat_bubble));
     world.push(Sphere::new(Vec3::new(1.0, 0.0, -1.0), 0.5, mat_right));
 
-    let camera = Camera::new(image_width, aspect_ratio, samples_per_pixel, max_depth);
+    let camera = Camera::new(image_width, aspect_ratio, samples_per_pixel, max_depth, fov);
     camera.render(&world);
 }
