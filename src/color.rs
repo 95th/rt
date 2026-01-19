@@ -1,6 +1,8 @@
 use std::fmt;
 
-#[derive(Debug, Clone, Copy)]
+use crate::vec3::Vec3;
+
+#[derive(Debug, Default, Clone, Copy)]
 pub struct Color<T = f64> {
     pub r: T,
     pub g: T,
@@ -19,6 +21,16 @@ impl Color<f64> {
             r: (255.999 * self.r) as u8,
             g: (255.999 * self.g) as u8,
             b: (255.999 * self.b) as u8,
+        }
+    }
+}
+
+impl From<Vec3> for Color {
+    fn from(value: Vec3) -> Self {
+        Self {
+            r: value.x,
+            g: value.y,
+            b: value.z,
         }
     }
 }
