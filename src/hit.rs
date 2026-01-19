@@ -1,4 +1,4 @@
-use crate::{ray::Ray, vec3::Vec3};
+use crate::{interval::Interval, ray::Ray, vec3::Vec3};
 
 pub struct HitRecord {
     pub point: Vec3,
@@ -26,7 +26,7 @@ impl HitRecord {
 }
 
 pub trait HitTarget {
-    fn hit(&self, ray: &Ray, ray_tmin: f64, ray_tmax: f64) -> Option<HitRecord>;
+    fn hit(&self, ray: &Ray, ray_t: Interval) -> Option<HitRecord>;
 }
 
 pub struct HitWorld {
@@ -44,11 +44,11 @@ impl HitWorld {
 }
 
 impl HitTarget for HitWorld {
-    fn hit(&self, ray: &Ray, ray_tmin: f64, ray_tmax: f64) -> Option<HitRecord> {
-        let mut closest_so_far = ray_tmax;
+    fn hit(&self, ray: &Ray, ray_t: Interval) -> Option<HitRecord> {
+        let mut closest_so_far = ray_t.max;
         let mut last_hit = None;
         for target in self.list.iter() {
-            if let Some(hit) = target.hit(ray, ray_tmin, closest_so_far) {
+            if let Some(hit) = target.hit(ray, ray_t.with_max(closest_so_far)) {
                 closest_so_far = hit.t;
                 last_hit.replace(hit);
             }

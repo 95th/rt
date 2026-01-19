@@ -1,5 +1,6 @@
 use crate::{
     hit::{HitRecord, HitTarget},
+    interval::Interval,
     ray::Ray,
     vec3::Vec3,
 };
@@ -16,7 +17,7 @@ impl Sphere {
 }
 
 impl HitTarget for Sphere {
-    fn hit(&self, ray: &Ray, ray_tmin: f64, ray_tmax: f64) -> Option<HitRecord> {
+    fn hit(&self, ray: &Ray, ray_t: Interval) -> Option<HitRecord> {
         let oc = self.center - ray.origin;
         let a = ray.direction.len_squared();
         let b = ray.direction.dot(oc);
@@ -28,9 +29,9 @@ impl HitTarget for Sphere {
 
         let sqrtd = d.sqrt();
         let mut t = (b - sqrtd) / a;
-        if t <= ray_tmin || t >= ray_tmax {
+        if !ray_t.surrounds(t) {
             t = (b + sqrtd) / a;
-            if t <= ray_tmin || t >= ray_tmax {
+            if !ray_t.surrounds(t) {
                 return None;
             }
         }

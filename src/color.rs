@@ -35,6 +35,6 @@ impl From<Vec3> for Color {
 impl<T: fmt::Display> fmt::Display for Color<T> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let Self { r, g, b } = self;
-        writeln!(f, "{r} {g} {b}")
+        write!(f, "{r} {g} {b}")
     }
 }

@@ -3,6 +3,7 @@ use std::f64;
 use crate::{
     color::Color,
     hit::{HitTarget, HitWorld},
+    interval::Interval,
     ray::Ray,
     sphere::Sphere,
     vec3::Vec3,
@@ -10,12 +11,13 @@ use crate::{
 
 mod color;
 mod hit;
+mod interval;
 mod ray;
 mod sphere;
 mod vec3;
 
 fn ray_color(ray: &Ray, target: &dyn HitTarget) -> Color {
-    if let Some(hit) = target.hit(ray, 0.0, f64::INFINITY) {
+    if let Some(hit) = target.hit(ray, Interval::new(0.0, f64::INFINITY)) {
         let c = 0.5 * (hit.normal + 1.0);
         return Color::from(c);
     }
