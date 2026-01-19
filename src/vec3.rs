@@ -1,5 +1,7 @@
 use std::ops::{Add, Div, Mul, Sub};
 
+use rand::{Rng, rng};
+
 #[derive(Debug, Default, Clone, Copy, PartialEq)]
 pub struct Vec3 {
     pub x: f64,
@@ -14,6 +16,40 @@ impl Vec3 {
 
     pub const fn splat(n: f64) -> Self {
         Self::new(n, n, n)
+    }
+
+    pub fn random() -> Self {
+        let mut rng = rng();
+        Self::new(rng.random(), rng.random(), rng.random())
+    }
+
+    pub fn random_range(min: f64, max: f64) -> Self {
+        let mut rng = rng();
+        Self::new(
+            rng.random_range(min..max),
+            rng.random_range(min..max),
+            rng.random_range(min..max),
+        )
+    }
+
+    pub fn random_unit() -> Self {
+        loop {
+            let p = Self::random_range(-1.0, 1.0);
+            let len_sqrd = p.len_squared();
+            if len_sqrd > f64::EPSILON && len_sqrd <= 1.0 {
+                break p / len_sqrd.sqrt();
+            }
+        }
+    }
+
+    pub fn random_unit_on_hemisphere(normal: Vec3) -> Self {
+        let u = Self::random_unit();
+        if u.dot(normal) > 0.0 {
+            // Same hemisphere
+            u
+        } else {
+            u * -1.0
+        }
     }
 
     pub fn dot(self, rhs: Self) -> f64 {

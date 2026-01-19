@@ -70,7 +70,9 @@ impl Camera {
 
     fn ray_color(&self, ray: &Ray, target: &dyn HitTarget) -> Vec3 {
         if let Some(hit) = target.hit(ray, Interval::new(0.0, f64::INFINITY)) {
-            return 0.5 * (hit.normal + 1.0);
+            let direction = Vec3::random_unit_on_hemisphere(hit.normal);
+            let color = self.ray_color(&Ray::new(hit.point, direction), target);
+            return 0.5 * color;
         }
 
         let unit_direction = ray.direction.unit();
