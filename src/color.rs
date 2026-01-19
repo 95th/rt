@@ -17,13 +17,13 @@ impl<T> Color<T> {
 
 impl Color<f64> {
     pub fn to_int(self) -> Color<u8> {
-        const INTENSITY: Interval = Interval::new(0.0, 0.999);
-        let Color { r, g, b } = self;
-        Color::new(
-            (256.0 * INTENSITY.clamp(r)) as u8,
-            (256.0 * INTENSITY.clamp(g)) as u8,
-            (256.0 * INTENSITY.clamp(b)) as u8,
-        )
+        let Self { r, g, b } = self;
+        let [r, g, b] = [r, g, b].map(|c| {
+            const INTENSITY: Interval = Interval::new(0.0, 0.999);
+            let corrected = linear_to_gamma(c);
+            (256.0 * INTENSITY.clamp(corrected)) as u8
+        });
+        Color::new(r, g, b)
     }
 }
 
@@ -38,4 +38,8 @@ impl<T: fmt::Display> fmt::Display for Color<T> {
         let Self { r, g, b } = self;
         write!(f, "{r} {g} {b}")
     }
+}
+
+fn linear_to_gamma(linear: f64) -> f64 {
+    if linear > 0.0 { linear.sqrt() } else { 0.0 }
 }
