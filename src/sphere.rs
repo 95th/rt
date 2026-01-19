@@ -1,5 +1,5 @@
 use crate::{
-    hit::{Hit, HitRecord},
+    hit::{HitRecord, HitTarget},
     ray::Ray,
     vec3::Vec3,
 };
@@ -15,7 +15,7 @@ impl Sphere {
     }
 }
 
-impl Hit for Sphere {
+impl HitTarget for Sphere {
     fn hit(&self, ray: &Ray, ray_tmin: f64, ray_tmax: f64) -> Option<HitRecord> {
         let oc = self.center - ray.origin;
         let a = ray.direction.len_squared();
@@ -36,7 +36,7 @@ impl Hit for Sphere {
         }
 
         let point = ray.at(t);
-        let normal = (point - self.center) / self.radius;
-        Some(HitRecord { point, normal, t })
+        let outward_normal = (point - self.center) / self.radius;
+        Some(HitRecord::new(ray, point, outward_normal, t))
     }
 }

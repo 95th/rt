@@ -1,4 +1,4 @@
-use crate::{color::Color, hit::Hit, ray::Ray, sphere::Sphere, vec3::Vec3};
+use crate::{color::Color, hit::HitTarget, ray::Ray, sphere::Sphere, vec3::Vec3};
 
 mod color;
 mod hit;
