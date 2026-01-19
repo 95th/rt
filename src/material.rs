@@ -1,3 +1,5 @@
+use rand::{Rng, rng};
+
 use crate::{hit::HitRecord, ray::Ray, vec3::Vec3};
 
 pub struct Scatter {
@@ -71,6 +73,12 @@ impl DielectricMaterial {
     pub fn new(refraction_index: f64) -> Self {
         Self { refraction_index }
     }
+
+    fn reflectance(&self, cosine: f64, refraction_index: f64) -> f64 {
+        let r0 = (1.0 - refraction_index) / (1.0 + refraction_index);
+        let r0 = r0 * r0;
+        r0 + (1.0 - r0) * (1.0 - cosine).powi(5)
+    }
 }
 
 impl Material for DielectricMaterial {
@@ -86,7 +94,7 @@ impl Material for DielectricMaterial {
         let sin_theta = (1.0 - cos_theta * cos_theta).sqrt();
 
         let cannot_refract = ri * sin_theta > 1.0;
-        let direction = if cannot_refract {
+        let direction = if cannot_refract || self.reflectance(cos_theta, ri) > rng().random() {
             unit_dir.reflect(hit.normal)
         } else {
             unit_dir.refract(hit.normal, ri)
