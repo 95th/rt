@@ -1,5 +1,6 @@
 use std::fmt;
 
+#[derive(Debug, Clone, Copy)]
 pub struct Color<T = f64> {
     r: T,
     g: T,
