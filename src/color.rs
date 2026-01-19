@@ -1,4 +1,4 @@
-use std::fmt::{self, Display};
+use std::fmt;
 
 pub struct Color<T = f64> {
     r: T,
@@ -22,7 +22,7 @@ impl Color<f64> {
     }
 }
 
-impl<T: Display> fmt::Display for Color<T> {
+impl<T: fmt::Display> fmt::Display for Color<T> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let Self { r, g, b } = self;
         writeln!(f, "{r} {g} {b}")
