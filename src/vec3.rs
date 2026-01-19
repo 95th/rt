@@ -8,11 +8,12 @@ pub struct Vec3 {
 }
 
 impl Vec3 {
-    pub const ZERO: Self = Self::new(0.0, 0.0, 0.0);
-    pub const ONE: Self = Self::new(1.0, 1.0, 1.0);
-
     pub const fn new(x: f64, y: f64, z: f64) -> Self {
         Self { x, y, z }
+    }
+
+    pub const fn splat(n: f64) -> Self {
+        Self::new(n, n, n)
     }
 
     pub fn dot(self, rhs: Self) -> f64 {

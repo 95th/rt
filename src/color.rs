@@ -17,21 +17,18 @@ impl<T> Color<T> {
 
 impl Color<f64> {
     pub fn to_int(self) -> Color<u8> {
-        Color {
-            r: (255.999 * self.r) as u8,
-            g: (255.999 * self.g) as u8,
-            b: (255.999 * self.b) as u8,
-        }
+        let Color { r, g, b } = self;
+        Color::new(
+            (255.999 * r) as u8,
+            (255.999 * g) as u8,
+            (255.999 * b) as u8,
+        )
     }
 }
 
 impl From<Vec3> for Color {
-    fn from(value: Vec3) -> Self {
-        Self {
-            r: value.x,
-            g: value.y,
-            b: value.z,
-        }
+    fn from(Vec3 { x, y, z }: Vec3) -> Self {
+        Self::new(x, y, z)
     }
 }
 
