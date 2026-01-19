@@ -1,28 +1,15 @@
-use crate::{color::Color, ray::Ray, vec3::Vec3};
+use crate::{color::Color, hit::Hit, ray::Ray, sphere::Sphere, vec3::Vec3};
 
 mod color;
+mod hit;
 mod ray;
+mod sphere;
 mod vec3;
 
-fn hit_sphere(center: Vec3, radius: f64, ray: &Ray) -> f64 {
-    let oc = center - ray.origin;
-    let a = ray.direction.len_squared();
-    let b = ray.direction.dot(oc);
-    let c = oc.len_squared() - radius * radius;
-    let discriminant = b * b - a * c;
-    if discriminant < 0.0 {
-        -1.0
-    } else {
-        (b - discriminant.sqrt()) / a
-    }
-}
-
 fn ray_color(ray: &Ray) -> Color {
-    let sphere_center = Vec3::new(0.0, 0.0, -1.0);
-    let t = hit_sphere(sphere_center, 0.5, ray);
-    if t > 0.0 {
-        let n = (ray.at(t) - sphere_center).unit();
-        let c = 0.5 * (n + 1.0);
+    let sphere = Sphere::new(Vec3::new(0.0, 0.0, -1.0), 0.5);
+    if let Some(hit) = sphere.hit(ray, 0.0, 18.0) {
+        let c = 0.5 * (hit.normal + 1.0);
         return Color::from(c);
     }
 
