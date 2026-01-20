@@ -1,4 +1,7 @@
+use std::{collections::HashMap, sync::mpsc};
+
 use rand::Rng;
+use rayon::prelude::*;
 
 use crate::{color::Color, hit::HitTarget, interval::Interval, ray::Ray, vec3::Vec3};
 
@@ -77,22 +80,46 @@ impl Camera {
     }
 
     pub fn render(&self, target: &dyn HitTarget) {
+        let (tx, rx) = mpsc::channel();
+        let mut out = HashMap::new();
+
+        std::thread::scope(|scope| {
+            scope.spawn(|| {
+                (0..self.image_height)
+                    .flat_map(|j| (0..self.image_width).map(move |i| (i, j)))
+                    .par_bridge()
+                    .for_each(|(i, j)| {
+                        let mut pixel_color = Vec3::splat(0.0);
+                        for _ in 0..self.samples_per_pixel {
+                            let ray = self.get_ray(i, j);
+                            pixel_color =
+                                pixel_color + self.ray_color(&ray, self.max_depth, target);
+                        }
+                        let color = Color::from(pixel_color * self.pixel_samples_scale);
+                        tx.send((i, j, color.to_int())).unwrap();
+                    });
+                drop(tx);
+            });
+
+            let total = self.image_height * self.image_width;
+            for (i, j, color) in rx {
+                out.insert((i, j), color);
+                if out.len() % 10000 == 0 {
+                    eprintln!("Pixels done: {} of {}", out.len(), total);
+                }
+            }
+            eprintln!("Pixels done: {} of {}", out.len(), total);
+        });
+
         println!("P3");
         println!("{} {}", self.image_width, self.image_height);
         println!("255");
-
         for j in 0..self.image_height {
-            eprintln!("Scanlines remaining: {}", self.image_height - j);
             for i in 0..self.image_width {
-                let mut pixel_color = Vec3::splat(0.0);
-                for _ in 0..self.samples_per_pixel {
-                    let ray = self.get_ray(i, j);
-                    pixel_color = pixel_color + self.ray_color(&ray, self.max_depth, target);
-                }
-                let color = Color::from(pixel_color * self.pixel_samples_scale);
-                println!("{}", color.to_int());
+                println!("{}", out[&(i, j)]);
             }
         }
+
         eprintln!("Done");
     }
 
