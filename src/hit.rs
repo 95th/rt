@@ -22,7 +22,7 @@ impl HitRecord {
         let normal = if front_face {
             outward_normal
         } else {
-            -1.0 * outward_normal
+            -outward_normal
         };
 
         Self {

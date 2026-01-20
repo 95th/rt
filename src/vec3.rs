@@ -1,4 +1,4 @@
-use std::ops::{Add, Div, Mul, Sub};
+use std::ops::{Add, Div, Mul, Neg, Sub};
 
 use rand::{Rng, rng};
 
@@ -48,12 +48,20 @@ impl Vec3 {
             // Same hemisphere
             u
         } else {
-            u * -1.0
+            -u
         }
     }
 
     pub fn dot(self, rhs: Self) -> f64 {
         self.x * rhs.x + self.y * rhs.y + self.z * rhs.z
+    }
+
+    pub fn cross(self, rhs: Self) -> Vec3 {
+        Self::new(
+            self.y * rhs.z - self.z * rhs.y,
+            self.z * rhs.x - self.x * rhs.z,
+            self.x * rhs.y - self.y * rhs.x,
+        )
     }
 
     pub fn unit(self) -> Self {
@@ -79,7 +87,7 @@ impl Vec3 {
     }
 
     pub fn refract(self, normal: Vec3, etai_over_etat: f64) -> Self {
-        let cos_theta = (self * -1.0).dot(normal).min(1.0);
+        let cos_theta = (-self).dot(normal).min(1.0);
         let r_out_perp = etai_over_etat * (self + cos_theta * normal);
         let r_out_parallel = -(1.0 - r_out_perp.len_squared()).abs().sqrt() * normal;
         r_out_perp + r_out_parallel
@@ -163,6 +171,14 @@ impl Div<f64> for Vec3 {
             y: self.y / rhs,
             z: self.z / rhs,
         }
+    }
+}
+
+impl Neg for Vec3 {
+    type Output = Self;
+
+    fn neg(self) -> Self::Output {
+        self * -1.0
     }
 }
 

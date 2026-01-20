@@ -18,12 +18,6 @@ mod sphere;
 mod vec3;
 
 fn main() {
-    let aspect_ratio = 16.0 / 9.0;
-    let image_width = 400;
-    let samples_per_pixel = 100;
-    let max_depth = 50;
-    let vfov = 90.0;
-
     let mat_ground = Rc::new(LambertianMaterial::new(Vec3::new(0.8, 0.8, 0.0)));
     let mat_center = Rc::new(LambertianMaterial::new(Vec3::new(0.1, 0.2, 0.5)));
     let mat_left = Rc::new(DielectricMaterial::new(1.5));
@@ -37,12 +31,24 @@ fn main() {
     world.push(Sphere::new(Vec3::new(-1.0, 0.0, -1.0), 0.4, mat_bubble));
     world.push(Sphere::new(Vec3::new(1.0, 0.0, -1.0), 0.5, mat_right));
 
+    let aspect_ratio = 16.0 / 9.0;
+    let image_width = 400;
+    let samples_per_pixel = 100;
+    let max_depth = 50;
+    let vfov = 20.0;
+    let lookfrom = Vec3::new(-2.0, 2.0, 1.0);
+    let lookat = Vec3::new(0.0, 0.0, -1.0);
+    let vup = Vec3::new(0.0, 1.0, 0.0);
+
     let camera = Camera::new(
         image_width,
         aspect_ratio,
         samples_per_pixel,
         max_depth,
         vfov,
+        lookfrom,
+        lookat,
+        vup,
     );
     camera.render(&world);
 }

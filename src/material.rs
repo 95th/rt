@@ -90,7 +90,7 @@ impl Material for DielectricMaterial {
         };
         let unit_dir = ray.direction.unit();
 
-        let cos_theta = (unit_dir * -1.0).dot(hit.normal).min(1.0);
+        let cos_theta = (-unit_dir).dot(hit.normal).min(1.0);
         let sin_theta = (1.0 - cos_theta * cos_theta).sqrt();
 
         let cannot_refract = ri * sin_theta > 1.0;
