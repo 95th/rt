@@ -1,4 +1,4 @@
-use std::{collections::HashMap, sync::mpsc, time::Instant};
+use std::{sync::mpsc, time::Instant};
 
 use rand::Rng;
 use rayon::prelude::*;
@@ -81,7 +81,7 @@ impl Camera {
 
     pub fn render(&self, target: &dyn HitTarget) {
         let (tx, rx) = mpsc::channel();
-        let mut out = HashMap::new();
+        let mut out = vec![vec![]; self.image_height as usize];
         let start = Instant::now();
         std::thread::scope(|scope| {
             scope.spawn(|| {
@@ -102,17 +102,18 @@ impl Camera {
                 drop(tx);
             });
 
+            let mut done = 0;
             for (j, line) in rx {
-                out.insert(j, line);
-                eprintln!("Scanline done: {} of {}", out.len(), self.image_height);
+                out[j as usize] = line;
+                done += 1;
+                eprintln!("Scanline done: {done} of {}", self.image_height);
             }
         });
 
         println!("P3");
         println!("{} {}", self.image_width, self.image_height);
         println!("255");
-        for j in 0..self.image_height {
-            let line = &out[&j];
+        for line in out {
             for color in line {
                 println!("{}", color);
             }
