@@ -8,7 +8,6 @@ pub struct Camera {
     pixel_samples_scale: f64,
     samples_per_pixel: u8,
     max_depth: u32,
-    fov: f64,
     center: Vec3,
     pixel00_loc: Vec3,
     pixel_delta_u: Vec3,
@@ -21,7 +20,7 @@ impl Camera {
         aspect_ratio: f64,
         samples_per_pixel: u8,
         max_depth: u32,
-        fov: f64,
+        vfov: f64,
     ) -> Self {
         let image_height = image_width as f64 / aspect_ratio;
         let image_height = if image_height >= 1.0 {
@@ -31,7 +30,7 @@ impl Camera {
         };
         let pixel_samples_scale = 1.0 / samples_per_pixel as f64;
         let focal_length = 1.0;
-        let theta = fov.to_radians();
+        let theta = vfov.to_radians();
         let h = (theta / 2.0).tan();
         let viewport_height = 2.0 * h * focal_length;
         let viewport_width = viewport_height * (image_width as f64 / image_height as f64);
@@ -53,7 +52,6 @@ impl Camera {
             samples_per_pixel,
             max_depth,
             center,
-            fov,
             pixel00_loc,
             pixel_delta_u,
             pixel_delta_v,
